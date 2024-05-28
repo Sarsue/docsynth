@@ -8,7 +8,7 @@ from utils import decode_firebase_token, get_user_id
 load_dotenv()
 
 
-endpoint_secret ='whsec_ed91c65f7bd8c9a0b71121358aaea581bc89093511f3c685fa53aa4171a75db9'
+endpoint_secret =  os.getenv('STRIPE_ENDPOINT_SECRET')
 stripe.api_key  = os.getenv('STRIPE_SECRET') #endpoint_secret
 
 subscriptions_bp = Blueprint("subscriptions", __name__,
