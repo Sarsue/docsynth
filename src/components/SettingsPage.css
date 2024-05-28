@@ -1,0 +1,46 @@
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    /* Set height to 100% of the viewport height */
+}
+
+.settings-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.settings-section {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.close-button {
+    background-color: #4285f4;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.settings-container.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+.settings-header.dark-mode {
+    color: #fff;
+}
+
+.close-button.dark-mode {
+    background-color: #4285f4;
+    color: #fff;
+}

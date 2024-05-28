@@ -1,0 +1,44 @@
+/* Home.css */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.video-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signin-link {
+    align-self: flex-end;
+    margin: 20px;
+}
+
+.company-logo-container {
+    align-self: flex-end;
+    margin: 20px;
+}
+
+.google-sign-in-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.google-sign-in-button:hover {
+    background-color: #0056b3;
+}
+
+.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
