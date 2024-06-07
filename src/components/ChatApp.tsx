@@ -319,6 +319,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ user, onLogout, subscriptionStatus })
                             },
                         }));
 
+                        setCurrentHistory(newHistory.id);
+
                         const linkDataResponse = await callApiWithToken(
                             `http://127.0.0.1:5000/api/v1/messages?message=${encodeURIComponent(message)}&history-id=${encodeURIComponent(newHistory.id)}`,
                             'POST'
@@ -471,8 +473,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ user, onLogout, subscriptionStatus })
 
             setHistories(historiesObject);
 
-            const firstHistoryId = parseInt(Object.keys(historiesObject)[0]);
-            setCurrentHistory(firstHistoryId);
+            const latestHistoryId = histories.length > 0 ? histories[histories.length - 1].id : null;
+            setCurrentHistory(latestHistoryId);
 
             console.log('Loaded Histories:', histories);
         } catch (error) {

@@ -33,6 +33,12 @@ const InputArea: React.FC<InputAreaProps> = ({ onSend, isSending }) => {
         const updatedFiles = attachedFiles.filter((f) => f !== file);
         setAttachedFiles(updatedFiles);
     };
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendClick();
+        }
+    };
 
     return (
         <div className={`input-area ${darkMode ? 'dark-mode' : ''}`}>
@@ -41,6 +47,7 @@ const InputArea: React.FC<InputAreaProps> = ({ onSend, isSending }) => {
                 placeholder="Type your message here or paste link here..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
                 disabled={isSending}
             />
             <div className="file-input">

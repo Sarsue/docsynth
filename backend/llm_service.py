@@ -43,7 +43,7 @@ def chat(query):
     try:
         
         suffix= f"""
-
+                    Given the query, generate a formatted response that displays properly in a chat application frontend. The response should be plain text
                     Query: "{query}"
 
                     Advice: 

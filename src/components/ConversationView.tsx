@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './ConversationView.css';
 import { History, Message } from './types';
 import { useDarkMode } from '../DarkModeContext';
+
 interface ConversationViewProps {
     history: History | null;
     onLike: (message: Message) => void;
@@ -12,6 +13,7 @@ interface ConversationViewProps {
 const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, onDislike, onCopy }) => {
     const [historyStatus, setHistoryStatus] = useState<{ [historyId: number]: { [messageId: number]: { liked: boolean; disliked: boolean } } }>({});
     const { darkMode, setDarkMode } = useDarkMode(); // Access the darkMode state and setDarkMode function
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Initialize historyStatus when a new history is loaded
@@ -29,8 +31,15 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                 ...prevStatus,
                 [history.id]: initialStatus,
             }));
+
+            // Auto Scroll to the bottom whenever a new history is loaded
+            scrollToBottom();
         }
     }, [history]);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     const getMessageStatus = (historyId: number, messageId: number) => {
         return historyStatus[historyId]?.[messageId] || { liked: false, disliked: false };
@@ -96,6 +105,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                     </div>
                 </div>
             ))}
+            <div ref={messagesEndRef} />
         </div>
     );
 };
