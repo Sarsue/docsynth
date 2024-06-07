@@ -67,7 +67,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
         }));
     };
 
-    // Function to parse Markdown to HTML
     const renderMarkdown = (markdown: string) => {
         return { __html: markdown.replace(/\n/g, '<br>') };
     };
@@ -84,31 +83,28 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                     }}
                 >
                     <div className="message-timestamp">{message.timestamp}</div>
-                    <div className="message-content">
-                        {/* Render message content as Markdown */}
-                        <p dangerouslySetInnerHTML={renderMarkdown(message.content)} />
-                        {message.sender === 'bot' && (
-                            <div className="actions">
-                                <button
-                                    onClick={() => handleLike(history?.id || 0, message)}
-                                    className={`like-button ${getMessageStatus(history?.id || 0, message.id).liked ? 'active' : ''}`}
-                                    disabled={getMessageStatus(history?.id || 0, message.id).disliked}
-                                    style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).liked ? 'blue' : '' }}
-                                >
-                                    Like
-                                </button>
-                                <button
-                                    onClick={() => handleDislike(history?.id || 0, message)}
-                                    className={`dislike-button ${getMessageStatus(history?.id || 0, message.id).disliked ? 'active' : ''}`}
-                                    disabled={getMessageStatus(history?.id || 0, message.id).liked}
-                                    style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).disliked ? 'blue' : '' }}
-                                >
-                                    Dislike
-                                </button>
-                                <button onClick={() => onCopy(message)}>Copy</button>
-                            </div>
-                        )}
-                    </div>
+                    <div className="message-content" dangerouslySetInnerHTML={renderMarkdown(message.content)} />
+                    {message.sender === 'bot' && (
+                        <div className="actions">
+                            <button
+                                onClick={() => handleLike(history?.id || 0, message)}
+                                className={`like-button ${getMessageStatus(history?.id || 0, message.id).liked ? 'active' : ''}`}
+                                disabled={getMessageStatus(history?.id || 0, message.id).disliked}
+                                style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).liked ? 'blue' : '' }}
+                            >
+                                Like
+                            </button>
+                            <button
+                                onClick={() => handleDislike(history?.id || 0, message)}
+                                className={`dislike-button ${getMessageStatus(history?.id || 0, message.id).disliked ? 'active' : ''}`}
+                                disabled={getMessageStatus(history?.id || 0, message.id).liked}
+                                style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).disliked ? 'blue' : '' }}
+                            >
+                                Dislike
+                            </button>
+                            <button onClick={() => onCopy(message)}>Copy</button>
+                        </div>
+                    )}
                 </div>
             ))}
             <div ref={messagesEndRef} />

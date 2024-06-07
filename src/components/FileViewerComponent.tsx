@@ -54,7 +54,7 @@ const FileViewerComponent: React.FC<FileViewerComponentProps> = ({ file, onClose
                 const containerWidth = containerRef.current?.clientWidth || 600;
 
                 return (
-                    <Document file={file.publicUrl} onLoadSuccess={onDocumentLoadSuccess} renderMode="svg">
+                    <Document file={file.publicUrl} onLoadSuccess={onDocumentLoadSuccess}>
                         {Array.from({ length: numPages }, (_, index) => (
                             <Page
                                 key={`page_${index + 1}`}
