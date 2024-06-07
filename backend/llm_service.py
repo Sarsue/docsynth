@@ -43,10 +43,9 @@ def chat(query):
     try:
         
         suffix= f"""
-                    Given the query, generate a formatted response that displays properly in a chat application frontend. The response should be plain text
-                    Query: "{query}"
+                    Given the Query: "{query}"
 
-                    Advice: 
+                    generate a formatted response that displays properly in a chat application frontend. The response should be markdown for good UX experience: 
             """
         intent = resolve_intent(query)
         prompt = get_prompt(intent)  + suffix
@@ -68,7 +67,7 @@ def chat(query):
         )
 
         mistral_summary = chat_response.choices[0].message.content
-        
+        print(mistral_summary)
         return post_process(intent,mistral_summary)
 
     except Exception as e:

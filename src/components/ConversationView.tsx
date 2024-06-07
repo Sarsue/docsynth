@@ -67,6 +67,11 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
         }));
     };
 
+    // Function to parse Markdown to HTML
+    const renderMarkdown = (markdown: string) => {
+        return { __html: markdown.replace(/\n/g, '<br>') };
+    };
+
     return (
         <div className={`conversation-view ${darkMode ? 'dark-mode' : ''}`}>
             {history?.messages.map((message) => (
@@ -80,7 +85,8 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                 >
                     <div className="message-timestamp">{message.timestamp}</div>
                     <div className="message-content">
-                        {message.content}
+                        {/* Render message content as Markdown */}
+                        <p dangerouslySetInnerHTML={renderMarkdown(message.content)} />
                         {message.sender === 'bot' && (
                             <div className="actions">
                                 <button
