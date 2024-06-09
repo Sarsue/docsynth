@@ -27,8 +27,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
     const [subscriptionStatusLocal, setSubscriptionStatusLocal] = useState(subscriptionStatus);
     const { darkMode, setDarkMode } = useDarkMode();
     const [personas, setPersonas] = useState<Persona[]>([]);
-    const [selectedPersonas, setSelectedPersonas] = useState<string[]>([]);
-
+    const [selectedPersonas, setSelectedPersonas] = useState<number[]>([]);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -36,11 +35,17 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
     const handleSubscriptionChange = (newStatus: string) => {
         setSubscriptionStatusLocal(newStatus);
     };
+
     useEffect(() => {
-        // Fetch user files with the user token
+        // Fetch personas when the component mounts
+        fetchPersonas();
+    }, []); // Run this effect only once when the component mounts
+
+    useEffect(() => {
+        // Fetch user files and personas with the user token whenever user changes
         if (user) {
-            fetchPersonas()
             fetchUserFiles();
+            fetchUserPersonas();
         }
     }, [user]); // Run this effect whenever the user object changes
 
@@ -98,7 +103,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
 
     const fetchPersonas = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/personas');
+            const response = await fetch('http://127.0.0.1:5000/api/v1/personas', {
+                credentials: 'include', // Include credentials for CORS
+            });
             if (response.ok) {
                 const personasData = await response.json();
                 setPersonas(personasData);
@@ -109,21 +116,41 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
             console.error('Error fetching personas:', error);
         }
     };
-    const handlePersonaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const personaName = event.target.name;
-        const isChecked = event.target.checked;
-        if (isChecked) {
-            setSelectedPersonas((prevSelected) => [...prevSelected, personaName]);
+    // Function to fetch user's selected personas
+    const fetchUserPersonas = async () => {
+        try {
+            const token = await user?.getIdToken();
+            const response = await fetch('http://127.0.0.1:5000/api/v1/users/personas', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                credentials: 'include', // Include credentials for CORS
+            });
+            if (response.ok) {
+                const userPersonas = await response.json();
+                setSelectedPersonas(userPersonas.map((persona: Persona) => persona.id));
+            } else {
+                console.error('Failed to fetch user personas:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching user personas:', error);
+        }
+    };
+
+    // Function to handle persona selection/deselection
+    const handlePersonaChange = (id: number) => {
+        if (selectedPersonas.includes(id)) {
+            setSelectedPersonas((prevSelected) => prevSelected.filter((p) => p !== id));
         } else {
-            setSelectedPersonas((prevSelected) => prevSelected.filter((p) => p !== personaName));
+            setSelectedPersonas((prevSelected) => [...prevSelected, id]);
         }
     };
 
     const handleSave = async () => {
         try {
             const token = await user?.getIdToken();
-            const response = await fetch('http://127.0.0.1:5000/api/v1/user/personas', {
-                method: 'POST',
+            const response = await fetch('http://127.0.0.1:5000/api/v1/users/personas', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -139,6 +166,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
             console.error('Error updating user personas:', error);
         }
     };
+
     return (
         <div className={`settings-container ${darkMode ? 'dark-mode' : ''}`}>
             <button className="close-button" onClick={() => navigate('/chat')}>
@@ -174,9 +202,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
                             <label>
                                 <input
                                     type="checkbox"
-                                    name={persona.name}
-                                    checked={selectedPersonas.includes(persona.name)}
-                                    onChange={handlePersonaChange}
+                                    checked={selectedPersonas.includes(persona.id)}
+                                    onChange={() => handlePersonaChange(persona.id)}
                                 />
                                 {persona.name}
                             </label>
@@ -184,8 +211,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
                     ))}
                 </ul>
             </div>
-
-            {/* Save button */}
             <div className="settings-section">
                 <button onClick={handleSave}>Save</button>
             </div>

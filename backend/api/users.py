@@ -3,6 +3,13 @@ from utils import decode_firebase_token, get_user_id
 
 users_bp = Blueprint("users", __name__, url_prefix="api/v1/users")
 
+def get_id_helper(store,success, user_info):
+    if not success:
+        return jsonify(user_info), 401
+
+    email = user_info['email']
+    id = store.get_user_id_from_email(email)
+    return id
 
 @users_bp.route("", methods=["POST"])
 def create_user():
@@ -29,15 +36,23 @@ def create_user():
     print(User)
     return jsonify(User)
     
-@users_bp.route("/<int:user_id>/personas", methods=["GET"])
+@users_bp.route("/personas", methods=["GET"])
 def get_user_personas(user_id):
     store = current_app.store
+    token = request.headers.get('Authorization')
+    success, user_info = get_user_id(token)
+    user_id = get_id_helper(store,success, user_info)
+
     user_personas = store.get_user_personas(user_id)
     return jsonify(user_personas)
 
-@users_bp.route("/<int:user_id>/personas", methods=["PUT"])
+@users_bp.route("/personas", methods=["PUT"])
 def update_user_personas(user_id):
     store = current_app.store
+    token = request.headers.get('Authorization')
+    success, user_info = get_user_id(token)
+    user_id = get_id_helper(store,success, user_info)
+
     data = request.json
     selected_personas = data.get("selected_personas")
     store.update_user_personas(user_id, selected_personas)
