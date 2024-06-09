@@ -20,12 +20,10 @@ def chat(query):
         "Friedrich Nietzsche": ["Thus Spoke Zarathustra", "Beyond Good and Evil"],
         "Buddha": ["The Dhammapada", "Sutta Nipata"],
         "Rumi": ["The Essential Rumi", "The Masnavi"],
-        "Socrates": ["Dialogues of Plato", "The Apology"],
         "Plato": ["The Republic", "The Symposium"],
         "Eckhart Tolle": ["The Power of Now", "A New Earth"],
         "David Deida": ["The Way of the Superior Man", "Dear Lover"],
-        "Helena Blavatsky": ["The Secret Doctrine", "Isis Unveiled"]
-        }
+     }
 
         # Convert personas dictionary to a comma-delimited string with titles
         persona_str = ", ".join([f"{key} (works: {', '.join(value)})" for key, value in personas.items()])
