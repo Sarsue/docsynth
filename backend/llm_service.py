@@ -11,23 +11,8 @@ mistral_key = os.getenv("MISTRAL_API_KEY")
 
 
 
-def chat(query):
+def chat(query, persona_str):
     try:
-        # Get Personas from database
-        personas = {
-        "Osho": ["The Book of Secrets", "The Mustard Seed"],
-        "Carl Jung": ["The Archetypes and the Collective Unconscious", "Man and His Symbols"],
-        "Friedrich Nietzsche": ["Thus Spoke Zarathustra", "Beyond Good and Evil"],
-        "Buddha": ["The Dhammapada", "Sutta Nipata"],
-        "Rumi": ["The Essential Rumi", "The Masnavi"],
-        "Plato": ["The Republic", "The Symposium"],
-        "Eckhart Tolle": ["The Power of Now", "A New Earth"],
-        "David Deida": ["The Way of the Superior Man", "Dear Lover"],
-     }
-
-        # Convert personas dictionary to a comma-delimited string with titles
-        persona_str = ", ".join([f"{key} (works: {', '.join(value)})" for key, value in personas.items()])
-
         # Load prompt from prompts folder 
         file_path = os.path.join("prompts", "prompt.txt")
         with open(file_path, "r") as file:

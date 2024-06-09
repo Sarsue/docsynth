@@ -7,9 +7,7 @@ from llm_service import chat
 messages_bp = Blueprint("messages", __name__, url_prefix="api/v1/messages")
 
 
-
-
-def get_id_helper(store,success, user_info):
+def get_id_helper(store, success, user_info):
     if not success:
         return jsonify(user_info), 401
 
@@ -22,24 +20,27 @@ def get_id_helper(store,success, user_info):
 
 @messages_bp.route('', methods=['POST'])
 def create_message():
-    store = current_app.store  
+    store = current_app.store
     message_list = []
     message = request.args.get('message')
     token = request.headers.get('Authorization')
     success, user_info = get_user_id(token)
-    id = get_id_helper(store,success, user_info)
+    id = get_id_helper(store, success, user_info)
+    user_persona_pref = store.get_formatted_user_personas(id)
     history_id = int(request.args.get('history-id'))
 
     print(message, id, history_id)
     user_request = store.add_message(
         content=message, sender='user', user_id=id, chat_history_id=history_id)
     message_list.append(user_request)
-   
-    response = chat(message)
+
+   # add history for more conversational context
+    response = chat(query=message, persona_str=user_persona_pref)
     bot_response = store.add_message(
-    content=response, sender='bot', user_id=id, chat_history_id=history_id)
+        content=response, sender='bot', user_id=id, chat_history_id=history_id)
     message_list.append(bot_response)
     return message_list
+
 
 @messages_bp.route('/like/<int:message_id>', methods=['POST'])
 def like_message(message_id):
@@ -47,7 +48,7 @@ def like_message(message_id):
         store = current_app.store
         token = request.headers.get('Authorization')
         success, user_info = get_user_id(token)
-        id = get_id_helper(store,success, user_info)
+        id = get_id_helper(store, success, user_info)
         store.like_message(message_id, id)
         return jsonify({'message': 'Message liked successfully'})
     except Exception as e:
@@ -63,7 +64,7 @@ def dislike_message(message_id):
         store = current_app.store
         token = request.headers.get('Authorization')
         success, user_info = get_user_id(token)
-        id = get_id_helper(store,success, user_info)
+        id = get_id_helper(store, success, user_info)
         store.dislike_message(message_id, id)
         return jsonify({'message': 'Message disliked successfully'})
     except Exception as e:
