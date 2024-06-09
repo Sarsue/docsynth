@@ -155,7 +155,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ selectedPersonas }),
+                body: JSON.stringify({ selected_personas: selectedPersonas }),  // Ensure correct key
             });
             if (response.ok) {
                 console.log('User personas updated successfully');
