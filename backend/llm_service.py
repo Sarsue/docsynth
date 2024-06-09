@@ -13,8 +13,9 @@ mistral_key = os.getenv("MISTRAL_API_KEY")
 
 def chat(query):
     try:
-
-        with open(".\\prompts\\prompt.txt", "r") as file:
+        # Load prompt from prompts folder 
+        file_path = os.path.join("prompts", "prompt.txt")
+        with open(file_path, "r") as file:
             prompt_template = file.read()
 
         # Format the prompt with the personas and query
