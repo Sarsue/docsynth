@@ -31,13 +31,14 @@ def create_message():
     print(f" user pref is {user_persona_pref}")
     history_id = int(request.args.get('history-id'))
 
+    formatted_history = store.format_user_chat_history(history_id,id)
     print(message, id, history_id)
     user_request = store.add_message(
         content=message, sender='user', user_id=id, chat_history_id=history_id)
     message_list.append(user_request)
 
     # add history for more conversational context
-    response = chat(query=message, persona_str=user_persona_pref)
+    response = chat(query=message, persona_str=user_persona_pref, convo_history= formatted_history)
     if len(user_persona_pref) == 0:
         response = f"{response} \n WARNING \n MANAGE YOUR PERSONA IN THE SETTINGS PAGE YOU CURRENTLY HAVE NOTHING SELECTED"
     bot_response = store.add_message(

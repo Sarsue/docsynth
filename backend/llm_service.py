@@ -9,7 +9,7 @@ load_dotenv()
 mistral_key = os.getenv("MISTRAL_API_KEY")
 
 
-def chat(query, persona_str):
+def chat(query, persona_str, convo_history):
     try:
         # Load prompt from prompts folder
         file_path = os.path.join("prompts", "prompt.txt")
@@ -17,7 +17,7 @@ def chat(query, persona_str):
             prompt_template = file.read()
 
         # Format the prompt with the personas and query
-        prompt = prompt_template.format(persona_str=persona_str, query=query)
+        prompt = prompt_template.format(persona_str=persona_str, query=query, convo_history=convo_history)
 
         print(prompt)
         api_key = mistral_key
