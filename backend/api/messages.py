@@ -27,6 +27,8 @@ def create_message():
     success, user_info = get_user_id(token)
     id = get_id_helper(store, success, user_info)
     user_persona_pref = store.get_formatted_user_personas(id)
+
+    print(f" user pref is {user_persona_pref}")
     history_id = int(request.args.get('history-id'))
 
     print(message, id, history_id)
@@ -34,8 +36,10 @@ def create_message():
         content=message, sender='user', user_id=id, chat_history_id=history_id)
     message_list.append(user_request)
 
-   # add history for more conversational context
+    # add history for more conversational context
     response = chat(query=message, persona_str=user_persona_pref)
+    if len(user_persona_pref) == 0:
+        response = f"{response} \n WARNING \n MANAGE YOUR PERSONA IN THE SETTINGS PAGE YOU CURRENTLY HAVE NOTHING SELECTED"
     bot_response = store.add_message(
         content=response, sender='bot', user_id=id, chat_history_id=history_id)
     message_list.append(bot_response)
