@@ -28,3 +28,17 @@ def create_user():
     User = store.add_user(email, name)
     print(User)
     return jsonify(User)
+    
+@users_bp.route("/<int:user_id>/personas", methods=["GET"])
+def get_user_personas(user_id):
+    store = current_app.store
+    user_personas = store.get_user_personas(user_id)
+    return jsonify(user_personas)
+
+@users_bp.route("/<int:user_id>/personas", methods=["PUT"])
+def update_user_personas(user_id):
+    store = current_app.store
+    data = request.json
+    selected_personas = data.get("selected_personas")
+    store.update_user_personas(user_id, selected_personas)
+    return jsonify({"success": True})
