@@ -7,6 +7,7 @@ import type { Stripe } from '@stripe/stripe-js';
 import './SettingsPage.css'; // Import the CSS file
 import { User } from 'firebase/auth';
 import { useDarkMode } from '../DarkModeContext';
+import { Persona } from './types';
 interface File {
     id: number;
     name: string;
@@ -25,6 +26,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
     const [knowledgeBaseFiles, setKnowledgeBaseFiles] = useState<File[]>([]);
     const [subscriptionStatusLocal, setSubscriptionStatusLocal] = useState(subscriptionStatus);
     const { darkMode, setDarkMode } = useDarkMode();
+    const [personas, setPersonas] = useState<Persona[]>([]);
+    const [selectedPersonas, setSelectedPersonas] = useState<string[]>([]);
+
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -35,6 +39,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
     useEffect(() => {
         // Fetch user files with the user token
         if (user) {
+            fetchPersonas()
             fetchUserFiles();
         }
     }, [user]); // Run this effect whenever the user object changes
@@ -91,6 +96,49 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
         }
     };
 
+    const fetchPersonas = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/v1/personas');
+            if (response.ok) {
+                const personasData = await response.json();
+                setPersonas(personasData);
+            } else {
+                console.error('Failed to fetch personas:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching personas:', error);
+        }
+    };
+    const handlePersonaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const personaName = event.target.name;
+        const isChecked = event.target.checked;
+        if (isChecked) {
+            setSelectedPersonas((prevSelected) => [...prevSelected, personaName]);
+        } else {
+            setSelectedPersonas((prevSelected) => prevSelected.filter((p) => p !== personaName));
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            const token = await user?.getIdToken();
+            const response = await fetch('http://127.0.0.1:5000/api/v1/user/personas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ selectedPersonas }),
+            });
+            if (response.ok) {
+                console.log('User personas updated successfully');
+            } else {
+                console.error('Failed to update user personas:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error updating user personas:', error);
+        }
+    };
     return (
         <div className={`settings-container ${darkMode ? 'dark-mode' : ''}`}>
             <button className="close-button" onClick={() => navigate('/chat')}>
@@ -117,7 +165,32 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
             <div className="settings-section">
                 <KnowledgeBaseComponent files={knowledgeBaseFiles} onDeleteFile={handleDeleteFile} darkMode={darkMode} />
             </div>
+            {/* Personas selection */}
+            <div className="settings-section">
+                <h3>Personas</h3>
+                <ul>
+                    {personas.map((persona) => (
+                        <li key={persona.id}>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name={persona.name}
+                                    checked={selectedPersonas.includes(persona.name)}
+                                    onChange={handlePersonaChange}
+                                />
+                                {persona.name}
+                            </label>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* Save button */}
+            <div className="settings-section">
+                <button onClick={handleSave}>Save</button>
+            </div>
         </div>
+
     );
 };
 

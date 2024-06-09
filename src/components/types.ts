@@ -36,5 +36,8 @@ export interface History {
     messages: Message[];
 }
 
-
+export interface Persona {
+    id: number;
+    name: string;
+}
 
