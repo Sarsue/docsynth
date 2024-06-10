@@ -171,7 +171,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
         }
     };
 
-
     return (
         <div className={`settings-container ${darkMode ? 'dark-mode' : ''}`}>
             <button className="close-button" onClick={() => navigate('/chat')}>
