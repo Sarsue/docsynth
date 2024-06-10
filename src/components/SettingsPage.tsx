@@ -28,6 +28,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
     const { darkMode, setDarkMode } = useDarkMode();
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [selectedPersonas, setSelectedPersonas] = useState<number[]>([]);
+    const [saveMessage, setSaveMessage] = useState<string>(''); // State for save message
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -155,22 +156,26 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ selected_personas: selectedPersonas }),  // Ensure correct key
+                body: JSON.stringify({ selected_personas: selectedPersonas }),
             });
             if (response.ok) {
                 console.log('User personas updated successfully');
+                setSaveMessage('User personas saved successfully'); // Set success message
             } else {
                 console.error('Failed to update user personas:', response.statusText);
+                setSaveMessage('Failed to save user personas'); // Set error message
             }
         } catch (error) {
             console.error('Error updating user personas:', error);
+            setSaveMessage('Error saving user personas'); // Set error message
         }
     };
+
 
     return (
         <div className={`settings-container ${darkMode ? 'dark-mode' : ''}`}>
             <button className="close-button" onClick={() => navigate('/chat')}>
-                Close
+                ❌
             </button>
             <h2 className="settings-header">Settings</h2>
             {/* Dark mode toggle button */}
@@ -212,7 +217,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
                 </ul>
             </div>
             <div className="settings-section">
-                <button onClick={handleSave}>Save</button>
+                <button className='save-persona-button' onClick={handleSave}>Save</button>
+                {/* Display save message */}
+                {saveMessage && <p className="save-message">{saveMessage}</p>}
             </div>
         </div>
 

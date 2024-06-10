@@ -51,8 +51,14 @@ const InputArea: React.FC<InputAreaProps> = ({ onSend, isSending }) => {
                 disabled={isSending}
             />
             <div className="file-input">
-                <div className="attachment-icon">📎</div>
-                <input type="file" multiple onChange={handleAttachment} disabled={isSending} />
+                <label htmlFor="file-upload" className="custom-file-upload">📎 Attach Files</label>
+                <input
+                    id="file-upload"
+                    type="file"
+                    multiple
+                    onChange={handleAttachment}
+                    disabled={isSending}
+                />
             </div>
             <div className="attached-files">
                 {attachedFiles.map((file, index) => (

@@ -92,7 +92,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                                 disabled={getMessageStatus(history?.id || 0, message.id).disliked}
                                 style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).liked ? 'blue' : '' }}
                             >
-                                Like
+                                👍
                             </button>
                             <button
                                 onClick={() => handleDislike(history?.id || 0, message)}
@@ -100,9 +100,9 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                                 disabled={getMessageStatus(history?.id || 0, message.id).liked}
                                 style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).disliked ? 'blue' : '' }}
                             >
-                                Dislike
+                                👎
                             </button>
-                            <button onClick={() => onCopy(message)}>Copy</button>
+                            <button onClick={() => onCopy(message)}>📋</button>
                         </div>
                     )}
                 </div>
