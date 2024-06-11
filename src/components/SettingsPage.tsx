@@ -24,7 +24,7 @@ interface SettingsPageProps {
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscriptionStatus }) => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'payment' | 'knowledge' | 'persona' | 'general'>('payment');
+    const [activeTab, setActiveTab] = useState<'payment' | 'knowledge' | 'persona' | 'general'>('general');
     const [knowledgeBaseFiles, setKnowledgeBaseFiles] = useState<File[]>([]);
     const [subscriptionStatusLocal, setSubscriptionStatusLocal] = useState<string | null>(subscriptionStatus);
     const { darkMode, setDarkMode } = useDarkMode();
@@ -179,11 +179,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
             <button className="close-button" onClick={() => navigate('/chat')}>
                 ❌
             </button>
-            <div className="tab-buttons">
+            <div className={`tab-buttons ${darkMode ? 'dark-mode' : ''}`}>
+                <button className={activeTab === 'general' ? 'active' : ''} onClick={() => setActiveTab('general')}>General</button>
                 <button className={activeTab === 'payment' ? 'active' : ''} onClick={() => setActiveTab('payment')}>Payment</button>
                 <button className={activeTab === 'knowledge' ? 'active' : ''} onClick={() => setActiveTab('knowledge')}>Knowledge Management</button>
                 <button className={activeTab === 'persona' ? 'active' : ''} onClick={() => setActiveTab('persona')}>Persona</button>
-                <button className={activeTab === 'general' ? 'active' : ''} onClick={() => setActiveTab('general')}>General</button>
             </div>
             <div className="settings-content">
                 {activeTab === 'knowledge' && (
