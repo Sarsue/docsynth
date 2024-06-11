@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PaymentView from './PaymentView';
 import KnowledgeBaseComponent from './KnowledgeBaseComponent';
-import type { Stripe } from '@stripe/stripe-js';
+// Import Stripe types directly from the library
+import { loadStripe, Stripe } from '@stripe/stripe-js';
 import './SettingsPage.css'; // Import the CSS file
 import { User } from 'firebase/auth';
 import { useDarkMode } from '../DarkModeContext';
 import { Persona } from './types';
+
 interface File {
     id: number;
     name: string;
@@ -22,9 +24,9 @@ interface SettingsPageProps {
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscriptionStatus }) => {
     const navigate = useNavigate();
-
+    const [activeTab, setActiveTab] = useState<'payment' | 'knowledge' | 'persona' | 'general'>('payment');
     const [knowledgeBaseFiles, setKnowledgeBaseFiles] = useState<File[]>([]);
-    const [subscriptionStatusLocal, setSubscriptionStatusLocal] = useState(subscriptionStatus);
+    const [subscriptionStatusLocal, setSubscriptionStatusLocal] = useState<string | null>(subscriptionStatus);
     const { darkMode, setDarkMode } = useDarkMode();
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [selectedPersonas, setSelectedPersonas] = useState<number[]>([]);
@@ -171,58 +173,61 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ stripePromise, user, subscr
         }
     };
 
+
     return (
         <div className={`settings-container ${darkMode ? 'dark-mode' : ''}`}>
             <button className="close-button" onClick={() => navigate('/chat')}>
                 ❌
             </button>
-            <h2 className="settings-header">Settings</h2>
-            {/* Dark mode toggle button */}
-            <div className="dark-mode-toggle">
-                <label htmlFor="darkModeToggle">Dark Mode:</label>
-                <input
-                    id="darkModeToggle"
-                    type="checkbox"
-                    checked={darkMode}
-                    onChange={toggleDarkMode}
-                />
+            <div className="tab-buttons">
+                <button className={activeTab === 'payment' ? 'active' : ''} onClick={() => setActiveTab('payment')}>Payment</button>
+                <button className={activeTab === 'knowledge' ? 'active' : ''} onClick={() => setActiveTab('knowledge')}>Knowledge Management</button>
+                <button className={activeTab === 'persona' ? 'active' : ''} onClick={() => setActiveTab('persona')}>Persona</button>
+                <button className={activeTab === 'general' ? 'active' : ''} onClick={() => setActiveTab('general')}>General</button>
             </div>
-            <div className="settings-section">
-                <PaymentView stripePromise={stripePromise}
-                    user={user}
-                    subscriptionStatus={subscriptionStatusLocal}
-                    onSubscriptionChange={handleSubscriptionChange}
-                />
-            </div>
-            <div className="settings-section">
-                <KnowledgeBaseComponent files={knowledgeBaseFiles} onDeleteFile={handleDeleteFile} darkMode={darkMode} />
-            </div>
-            {/* Personas selection */}
-            <div className="settings-section">
-                <h3>Personas</h3>
-                <ul>
-                    {personas.map((persona) => (
-                        <li key={persona.id}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedPersonas.includes(persona.id)}
-                                    onChange={() => handlePersonaChange(persona.id)}
-                                />
-                                {persona.name}
-                            </label>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="settings-section">
-                <button className='save-persona-button' onClick={handleSave}>Save</button>
-                {/* Display save message */}
-                {saveMessage && <p className="save-message">{saveMessage}</p>}
+            <div className="settings-content">
+                {activeTab === 'knowledge' && (
+                    <KnowledgeBaseComponent files={knowledgeBaseFiles} onDeleteFile={handleDeleteFile} darkMode={darkMode} />
+                )}
+                {activeTab === 'persona' && (
+                    <div>
+                        <h3>Personas</h3>
+                        <ul>
+                            {personas.map((persona) => (
+                                <li key={persona.id}>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedPersonas.includes(persona.id)}
+                                            onChange={() => handlePersonaChange(persona.id)}
+                                        />
+                                        {persona.name}
+                                    </label>
+                                </li>
+                            ))}
+                        </ul>
+                        <button className="save-persona-button" onClick={handleSave}>Save</button>
+                        {saveMessage && <p className="save-message">{saveMessage}</p>}
+                    </div>
+                )}
+                {activeTab === 'payment' && (
+                    <PaymentView stripePromise={stripePromise} user={user} subscriptionStatus={subscriptionStatusLocal} onSubscriptionChange={handleSubscriptionChange} />
+                )}
+                {activeTab === 'general' && (
+                    <div className="dark-mode-toggle">
+                        <label htmlFor="darkModeToggle">Dark Mode:</label>
+                        <input
+                            id="darkModeToggle"
+                            type="checkbox"
+                            checked={darkMode}
+                            onChange={() => setDarkMode(!darkMode)}
+                        />
+                    </div>
+                )}
             </div>
         </div>
-
     );
+
 };
 
 export default SettingsPage;

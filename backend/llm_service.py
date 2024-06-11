@@ -17,10 +17,9 @@ def chat(query, persona_str, convo_history):
             prompt_template = file.read()
 
         # Format the prompt with the personas and query
-        prompt = prompt_template.format(persona_str=persona_str, query=query, convo_history=convo_history)
+        prompt = prompt_template.format(
+            specific_figures=persona_str, query=query, convo_history=convo_history)
 
-        print(prompt)
-        
         api_key = mistral_key
         model = "mistral-medium"
         client = MistralClient(api_key=api_key)

@@ -12,18 +12,16 @@ interface ConversationViewProps {
 
 const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, onDislike, onCopy }) => {
     const [historyStatus, setHistoryStatus] = useState<{ [historyId: number]: { [messageId: number]: { liked: boolean; disliked: boolean } } }>({});
-    const { darkMode, setDarkMode } = useDarkMode(); // Access the darkMode state and setDarkMode function
+    const { darkMode } = useDarkMode();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Initialize historyStatus when a new history is loaded
         if (history) {
             const initialStatus: { [messageId: number]: { liked: boolean; disliked: boolean } } = {};
-
             history.messages.forEach((message) => {
                 initialStatus[message.id] = {
-                    liked: message.liked || false, // Assuming backend provides liked status
-                    disliked: message.disliked || false, // Assuming backend provides disliked status
+                    liked: message.liked || false,
+                    disliked: message.disliked || false,
                 };
             });
 
@@ -32,7 +30,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                 [history.id]: initialStatus,
             }));
 
-            // Auto Scroll to the bottom whenever a new history is loaded
             scrollToBottom();
         }
     }, [history]);
@@ -77,10 +74,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                 <div
                     key={message.id}
                     className={`chat-message ${message.sender === 'user' ? 'sent' : 'received'}`}
-                    style={{
-                        backgroundColor: message.sender === 'user' ? 'white' : 'lightsteelblue',
-                        alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                    }}
                 >
                     <div className="message-timestamp">{message.timestamp}</div>
                     <div className="message-content" dangerouslySetInnerHTML={renderMarkdown(message.content)} />
@@ -90,7 +83,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                                 onClick={() => handleLike(history?.id || 0, message)}
                                 className={`like-button ${getMessageStatus(history?.id || 0, message.id).liked ? 'active' : ''}`}
                                 disabled={getMessageStatus(history?.id || 0, message.id).disliked}
-                                style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).liked ? 'blue' : '' }}
                             >
                                 👍
                             </button>
@@ -98,11 +90,10 @@ const ConversationView: React.FC<ConversationViewProps> = ({ history, onLike, on
                                 onClick={() => handleDislike(history?.id || 0, message)}
                                 className={`dislike-button ${getMessageStatus(history?.id || 0, message.id).disliked ? 'active' : ''}`}
                                 disabled={getMessageStatus(history?.id || 0, message.id).liked}
-                                style={{ backgroundColor: getMessageStatus(history?.id || 0, message.id).disliked ? 'blue' : '' }}
                             >
                                 👎
                             </button>
-                            <button onClick={() => onCopy(message)}>📋</button>
+                            <button onClick={() => onCopy(message)} className="copy-button">📋</button>
                         </div>
                     )}
                 </div>
